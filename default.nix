@@ -1,4 +1,6 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {}
+, solver
+, input ? ./input.txt }:
 let
   for = solver : pkgs.haskellPackages.callCabal2nix (baseNameOf solver) (pkgs.stdenv.mkDerivation rec {
   name = "${baseNameOf solver}-src";
@@ -25,5 +27,5 @@ let
   '';
   };
 in {
-  slarbo = run ./slarbo.hs /home/joranvar/B-large-practice.in;
+  run = run solver input;
 }
