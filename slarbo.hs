@@ -2,9 +2,7 @@
 #! nix-shell -i runghc -p ghc
 
 import Data.List (sort)
-
-inputFileName = "/home/joranvar/B-large-practice.in"
-outputFileName = "output_large.txt"
+import System.IO (hSetBuffering, stdout, stdin, BufferMode(LineBuffering))
 
 solve :: [Integer] -> String
 solve ts =
@@ -18,8 +16,14 @@ solve ts =
 
 main :: IO ()
 main = do
-  _:rows <- lines <$> readFile inputFileName
-  writeFile outputFileName $ concat $ zipWith format [1..] $ map (solve . parse) rows
+  hSetBuffering stdout LineBuffering
+  hSetBuffering stdin LineBuffering
+  interact mymain
+
+mymain :: String -> String
+mymain input =
+  let _:rows = lines input
+  in concat $ zipWith format [1..] $ map (solve . parse) rows
   where
     parse row = case map read $ words row of
       _:ts -> ts
