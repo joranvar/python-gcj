@@ -46,14 +46,29 @@ interactiveCase caseNo = flip (iterateUntilM isEndState) caseNo $ \state -> do
   putStr output
   pure state'
 
-newtype P = P ()
+newtype P = P { want :: [(Int, Int)] }
 
 mymain :: State -> String -> (String, State)
-mymain (InitialState t) _ = ("", InProgressState t (P ()))
-mymain (InProgressState t _) row = (format . solve . parse $ row, EndState True)
-  where
-    parse = map read . words
-    format result = "Case #" ++ show t ++ ": " ++ result ++ "\n"
+mymain _ "-1 -1" = ("", EndState False)
+mymain _ "0 0" = ("", EndState True)
+mymain (InitialState t) a = let (output, state) = solve $ initialState (read a) in (output, InProgressState t state)
+mymain (InProgressState t p) xy = let [x,y] = map read $ words xy; (output, p') = solve $ addState p x y in (output, InProgressState t p')
 
-solve :: [Integer] -> String
-solve = show . sum
+solve :: P -> (String, P)
+solve p =
+  let want' = want p
+      (x, y) = head want'
+      minx = (1 +) $ minimum $ map fst want'
+      miny = (1 +) $ minimum $ map snd want'
+      maxx = (-1 +) $ maximum $ map fst want'
+      maxy = (-1 +) $ maximum $ map snd want'
+  in (show (clamp minx maxx x) ++ " " ++ show (clamp miny maxy y) ++ "\n", p)
+  where clamp lower upper = max 2 . min upper . max lower
+
+initialState :: Int -> P
+initialState a =
+  let (x', y') = case a of 20 -> (4, 5); 200 -> (10, 20)
+  in P [(x,y) | x <- [1..x'], y <- [1..y']]
+
+addState :: P -> Int -> Int -> P
+addState p x y = P { want = delete (x,y) $ want p }
