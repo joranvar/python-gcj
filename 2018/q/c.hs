@@ -1,5 +1,6 @@
 import Data.List (delete)
 import System.IO (hSetBuffering, stdout, stdin, BufferMode(LineBuffering))
+--import System.IO (stderr, hPutStr)
 
 -- From Control.Monad.Loops:
 infixr 0 `iterateUntilM`
@@ -30,6 +31,7 @@ main = do
 data State = InitialState Int
            | InProgressState Int P
            | EndState Bool
+--           deriving Show
 
 isSolved :: State -> Bool
 isSolved (EndState b) = b
@@ -42,11 +44,14 @@ isEndState _ = False
 interactiveCase :: State -> IO State
 interactiveCase caseNo = flip (iterateUntilM isEndState) caseNo $ \state -> do
   line <- getLine
+--  hPutStr stderr $ "-> " ++ line
   let (output, state') = mymain state line
+--  hPutStr stderr $ "<- " ++ output
+--  hPutStr stderr $ show state'
   putStr output
   pure state'
 
-newtype P = P { want :: [(Int, Int)] }
+newtype P = P { want :: [(Int, Int)] } -- deriving Show
 
 mymain :: State -> String -> (String, State)
 mymain _ "-1 -1" = ("", EndState False)
