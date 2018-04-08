@@ -30,11 +30,12 @@ toSlots = dropWhile ((==0) . snd) . reverse . zip (map (2^) [0..]) . concatMap (
 
 decrease :: [(Integer, Integer)] -> Integer -> Integer
 decrease ((_, count):(value', count'):rest) delta =
-  let need = delta `div` value'
+  let need = abs $ delta `div` (-value')
       taken = min need count
       delta' = delta - (taken * value')
       newList = (value', count' + taken):rest
   in if delta' > 0 then taken + decrease newList delta' else taken
+decrease a b = error $ show (a,b)
 
 solve :: (Integer, String) -> String
 solve (d, p) | minValue (toSlots p) > d = "IMPOSSIBLE"
