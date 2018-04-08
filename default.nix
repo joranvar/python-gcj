@@ -28,4 +28,5 @@ let
   };
 in {
   run = run solver input;
+  solver = for solver;
 }
