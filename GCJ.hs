@@ -40,7 +40,7 @@ parseNums n =
                 then Nothing
                 else Just (as, ss)
 
-parseRepeat :: Int -> Parser [a] -> Parser [[a]]
+parseRepeat :: Int -> Parser a -> Parser [a]
 parseRepeat n p =
     Parser $ \ss ->
         let as =
