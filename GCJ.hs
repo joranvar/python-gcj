@@ -15,19 +15,15 @@ newtype Parser a = Parser
 instance Applicative Parser where
     pure a = Parser $ \ss -> Just (a, ss)
     pf <*> p =
-        Parser $ \ss ->
-            case run p ss of
-                Just (a, ss') ->
-                    case run pf ss' of
-                        Just (f, ss'') -> Just (f a, ss'')
-                        Nothing -> Nothing
-                Nothing -> Nothing
+        Parser $ \ss -> do
+            (a, ss') <- run p ss
+            (f, ss'') <- run pf ss'
+            pure (f a, ss'')
 instance Monad Parser where
     ma >>= mf =
-        Parser $ \ss ->
-            case run ma ss of
-                Just (a, ss') -> run (mf a) ss'
-                Nothing -> Nothing
+        Parser $ \ss -> do
+            (a, ss') <- run ma ss
+            run (mf a) ss'
 
 problems :: Parser a -> IO [(Int, a)]
 problems p = do
