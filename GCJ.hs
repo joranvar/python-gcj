@@ -9,6 +9,7 @@ module GCJ
     , Parser
     ) where
 
+import Control.Monad (replicateM)
 import Data.List (unfoldr)
 import System.IO (BufferMode(LineBuffering), hSetBuffering, stdin, stdout)
 
@@ -55,19 +56,11 @@ parseNums :: (Read a, Num a) => Int -> Parser [a]
 parseNums n = map read <$> parseWords n
 
 parseRepeat :: Int -> Parser a -> Parser [a]
-parseRepeat n p =
-    Parser $ \ss ->
-        let as =
-                take n $
-                iterate
-                    (\(Just (as', ss')) ->
-                         case run p ss' of
-                             Just (a, rest) -> Just (as' ++ [a], rest)
-                             Nothing -> Nothing)
-                    (Just ([], ss))
-         in if length as /= n
-                then Nothing
-                else last as
+parseRepeat n p = do
+  as <- replicateM n p
+  if length as /= n
+    then Parser $ const Nothing
+    else pure as
 
 parseGrid :: (Char -> a) -> Int -> Int -> Parser [[a]]
 parseGrid f r c = parseRepeat r $ map f <$> parseChars c
