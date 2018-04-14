@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 module GCJ
     ( problems
+    , parseChars
     , parseNums
     , parseRepeat
     , parseWords
@@ -37,6 +38,14 @@ parseWords :: Int -> Parser [String]
 parseWords n =
     Parser $ \(s:ss) ->
         let as = take n $ words s
+         in if length as /= n
+                then Nothing
+                else Just (as, ss)
+
+parseChars :: Int -> Parser String
+parseChars n =
+    Parser $ \(s:ss) ->
+        let as = take n s
          in if length as /= n
                 then Nothing
                 else Just (as, ss)
