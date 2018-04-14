@@ -4,8 +4,8 @@
 let
   for = solver : pkgs.haskellPackages.callCabal2nix (baseNameOf solver) (pkgs.stdenv.mkDerivation rec {
   name = "${baseNameOf solver}-src";
-  cabal = ./codejam.cabal;
-  srcs = [ ./LICENSE ];
+  cabal = ../codejam.cabal;
+  srcs = [ ../LICENSE ];
   phases = ["unpackPhase"];
   unpackPhase = ''
     set -Eux
