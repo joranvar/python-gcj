@@ -2,6 +2,7 @@
 module GCJ
     ( problems
     , parseChars
+    , parseGrid
     , parseNums
     , parseRepeat
     , parseWords
@@ -67,3 +68,6 @@ parseRepeat n p =
          in if length as /= n
                 then Nothing
                 else last as
+
+parseGrid :: (Char -> a) -> Int -> Int -> Parser [[a]]
+parseGrid f r c = parseRepeat r $ map f <$> parseChars c
