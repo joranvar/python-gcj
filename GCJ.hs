@@ -3,6 +3,7 @@ module GCJ
     ( problems
     , parseNums
     , parseRepeat
+    , parseWords
     , Parser
     ) where
 
@@ -32,13 +33,16 @@ problems p = do
     t <- read <$> getLine
     zip [1 .. t] . unfoldr (run p) . lines <$> getContents
 
-parseNums :: (Read a, Num a) => Int -> Parser [a]
-parseNums n =
+parseWords :: Int -> Parser [String]
+parseWords n =
     Parser $ \(s:ss) ->
-        let as = take n $ map read $ words s
+        let as = take n $ words s
          in if length as /= n
                 then Nothing
                 else Just (as, ss)
+
+parseNums :: (Read a, Num a) => Int -> Parser [a]
+parseNums n = map read <$> parseWords n
 
 parseRepeat :: Int -> Parser a -> Parser [a]
 parseRepeat n p =
