@@ -17,7 +17,7 @@ cabal-version:       >=1.10
 
 executable codejam
   main-is:             Main.hs
-  -- other-modules:       
+  other-modules:       GCJ
   -- other-extensions:    
   build-depends:       base >=4.10 && <4.11
   -- hs-source-dirs:      

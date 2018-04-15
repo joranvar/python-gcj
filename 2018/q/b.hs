@@ -1,20 +1,15 @@
+import Data.Bifunctor (second)
 import Data.List (sort, partition)
-import System.IO (hSetBuffering, stdout, stdin, BufferMode(LineBuffering))
+import GCJ
 
 main :: IO ()
-main = do
-  hSetBuffering stdout LineBuffering
-  hSetBuffering stdin LineBuffering
-  interact mymain
+main = putStr =<< unlines . map (format . second solve) <$> problems parser
+  where format (r, result) = "Case #" ++ show r ++ ": " ++ result
 
-mymain :: String -> String
-mymain input =
-  let _:rows = lines input
-      vRows = map snd . filter fst . zip (cycle [False, True]) $ rows
-  in concat $ zipWith format [1..] $ map (solve . parse) vRows
-  where
-    parse = map read . words
-    format r result = "Case #" ++ show r ++ ": " ++ result ++ "\n"
+parser :: Parser [Integer]
+parser = do
+  [n] <- parseNums 1
+  parseNums n
 
 troubleSort :: (Ord a) => [a] -> [a]
 troubleSort =

@@ -5,14 +5,14 @@ let
   for = solver : pkgs.haskellPackages.callCabal2nix (baseNameOf solver) (pkgs.stdenv.mkDerivation rec {
   name = "${baseNameOf solver}-src";
   cabal = ../codejam.cabal;
-  srcs = [ ../LICENSE ];
+  srcs = [ ../LICENSE ../GCJ.hs ];
   phases = ["unpackPhase"];
   unpackPhase = ''
     set -Eux
     mkdir $out
     cat ${cabal} | sed -e 's/Main.hs/${baseNameOf solver}/' > $out/codejam.cabal
     cp ${solver} $out/${baseNameOf solver}
-    ${pkgs.lib.concatStrings (map (f: "cp ${f} $out/${baseNameOf f}") srcs)}
+    ${pkgs.lib.concatStrings (map (f: "cp ${f} $out/${baseNameOf f}\n") srcs)}
     set +Eux
   '';
   }) {};
