@@ -1,21 +1,15 @@
-{-# LANGUAGE DeriveFunctor #-}
-module GCJ
-    ( problems
-    , parseChars
-    , parseGrid
-    , parseNums
-    , parseRepeat
-    , parseWords
-    , Parser
-    ) where
-
+module GCJ ( problems, parseChars, parseGrid, parseNums, parseRepeat, parseWords, Parser ) where
 import Control.Monad (replicateM)
 import Data.List (unfoldr)
 import System.IO (BufferMode(LineBuffering), hSetBuffering, stdin, stdout)
 
 newtype Parser a = Parser
     { run :: [String] -> Maybe (a, [String])
-    } deriving (Functor)
+    }
+instance Functor Parser where
+  fmap f p = Parser $ \ss -> do
+    (a, ss') <- run p ss
+    pure (f a, ss')
 instance Applicative Parser where
     pure a = Parser $ \ss -> Just (a, ss)
     pf <*> p =
