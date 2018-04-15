@@ -1,23 +1,17 @@
 {-# LANGUAGE LambdaCase #-}
-
+import Data.Bifunctor (second)
 import Data.Functor (($>))
-import Data.List (sort, group, genericLength)
-import System.IO (hSetBuffering, stdout, stdin, BufferMode(LineBuffering))
+import Data.List (group, genericLength)
+import GCJ
 
 main :: IO ()
-main = do
-  hSetBuffering stdout LineBuffering
-  hSetBuffering stdin LineBuffering
-  interact mymain
+main = putStr =<< unlines . map (format . second solve) <$> problems parser
+  where format (r, result) = "Case #" ++ show r ++ ": " ++ result
 
-mymain :: String -> String
-mymain input =
-  let _:rows = lines input
-  in concat $ zipWith format [1..] $ map (solve . parse) rows
-  where
-    parse row = case words row of
-      [d', p'] -> (read d', p')
-    format r result = "Case #" ++ show r ++ ": " ++ result ++ "\n"
+parser :: Parser (Integer, String)
+parser = do
+  [d, p] <- parseWords 2
+  pure (read d, p)
 
 minValue :: [(Integer, Integer)] -> Integer
 minValue = sum . map snd
